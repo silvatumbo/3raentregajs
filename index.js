@@ -1,3 +1,5 @@
+const divProductos = document.getElementById('divProductos')
+
 // clase productos
 
 class indumentaria {
@@ -8,41 +10,73 @@ class indumentaria {
     }
 }
 
-//productos
-const remera = new indumentaria(1, 'remera', 700)
-const short = new indumentaria(2, 'short', 400)
-const gorro = new indumentaria(3, 'gorro', 300)
-const equipo = new indumentaria(4, 'equipo', 1000)
+const ropa = [
+    new indumentaria(1, 'Remera', 700),
+    new indumentaria(2, 'Short', 400),
+    new indumentaria(3, 'Gorro', 300),
+    new indumentaria(4, 'Medias', 200),
+    new indumentaria(5, 'Equipo', 1000),
+    new indumentaria(6, 'Pelotas', 500)
+]
 
-const productos = [remera, short, gorro, equipo]
+ropa.forEach(prod => {
+    divProductos.innerHTML += `<div class="card">
+    <div class="card-body">
+      <h5 class="card-title">${prod.nombre}</h5>
+      <p class="card-text">${prod.precio}</p>
+      <button id=${prod.tipo} class="btn btn-success">AGREGAR</button>
+    </div>
+    </div>`
+}
+)
 
-let productoSeleccionado = prompt('Elige que deseas comprar: Remera-Short-Equipo-Gorro')
-let contCompra = true
 const carrito = []
 
-while (contCompra === true) {
-    const indumentaria = productos.find((producto) => producto.nombre === productoSeleccionado.toLocaleLowerCase().trim()
-    )
-if (indumentaria) {
-    carrito.push(indumentaria)
-} else {
-    productoSeleccionado = prompt (
-        'Elige un producto válido Remera, Short, Gorro, Equipo'
-    )
-    continue
-}
+const botonesAgregar = document.querySelectorAll('.btn-success')
+botonesAgregar.forEach((boton) => {
+    boton.onclick = () => {
+        const indumentaria = ropa.find((prod) => prod.tipo === parseInt(boton.tipo))
 
-const eleccion = prompt('Desea seguir comprando? si/no')
-if (eleccion === 'si') {
-    productoSeleccionado = prompt(
-        'Elige que deseas comprar: Remera-Short-Equipo-Gorro'
-    )
-} else {
-    contCompra = false
+        const prodCarrito = {
+            tipo: ropa.tipo,
+            nombre: ropa.nombre,
+            precio: ropa.precio,
+            cantidad: 1,
+        }
+
+        const indexProd = carrito.findIndex((prod) => prod.tipo === prodCarrito.tipo)
+        if (indexProd === -1) {
+            carrito.push(prodCarrito)
+        } else {
+            carrito[indexProd].cantidad++
+        }
+    }
+})
+
+// boton finalizar
+const botonFinalizar = document.querySelector('#finalizar')
+const thead = document.querySelector('#thead')
+const tbody = document.querySelector('#tbody')
+const parrafoTotal = document.querySelector('#total')
+botonFinalizar.onclick = () => {
+    divProductos.remove()
+    botonFinalizar.remove()
+    thead.innerHTML = `<tr>
+  <th scope="col">Producto</th>
+  <th scope="col">Cantidad</th>
+  <th scope="col">Total</th>
+  </tr>`
+
+    let totalCompra = 0
+    carrito.forEach(prod => {
+        totalCompra += prod.cantidad * prod.precio
+        tbody.innerHTML += `
+      <tr>
+        <td>${prod.nombre}</td>
+        <td>${prod.cantidad}</td>
+        <td>${prod.cantidad * prod.precio}</td>
+      </tr>
+      `
+    })
+    parrafoTotal.innerText = `El total de tu compra es ${totalCompra}`
 }
-}
-let totalcompra = 0
-for (const indumentaria of carrito) {
-    totalcompra = totalcompra + indumentaria.precio
-}
-alert('El valor de su compra es '+totalcompra)
